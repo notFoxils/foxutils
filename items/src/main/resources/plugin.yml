@@ -1,0 +1,15 @@
+name: foxutils-items
+api: '1.21'
+version: '${project.version}'
+main: me.foxils.foxutils.FoxutilsItems
+
+commands:
+  getitem:
+    description: Get custom item using the item's key
+    usage: /<command> <player> <itemkey> <amount>
+    permission: op
+    aliases: [ "get" ]
+  listitems:
+    description: Lists all currently registered items
+    usage: /<command>
+    permission: op
