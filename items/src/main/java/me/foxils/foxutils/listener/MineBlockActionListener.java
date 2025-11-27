@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import me.foxils.foxutils.itemaction.MineAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 public class MineBlockActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public MineBlockActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public MineBlockActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -25,7 +25,7 @@ public class MineBlockActionListener implements Listener {
 
         final ItemStack itemStackUsedToMine = playerInventory.getItemInMainHand();
         for (final ItemStack itemStack : playerInventory.getContents()) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final MineAction mineActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final MineAction mineActionItem))
                 continue;
 
             if (itemStackUsedToMine.equals(itemStack))

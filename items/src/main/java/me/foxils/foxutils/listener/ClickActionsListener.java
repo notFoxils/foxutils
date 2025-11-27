@@ -9,13 +9,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.foxils.foxutils.itemaction.ClickActions;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 public final class ClickActionsListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public ClickActionsListener(final @Nonnull ItemRegistry itemRegistry) {
+    public ClickActionsListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -27,7 +27,7 @@ public final class ClickActionsListener implements Listener {
         }
 
         final ItemStack itemInteracted = event.getItem();
-        if (!(itemRegistry.getItemFromItemStack(itemInteracted) instanceof final ClickActions clickActionItem)) {
+        if (!(itemRegistry.getItemTemplateFromItemStack(itemInteracted) instanceof final ClickActions clickActionItem)) {
             return;
         }
 

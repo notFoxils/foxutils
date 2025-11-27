@@ -9,13 +9,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import me.foxils.foxutils.itemaction.SelectItemAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 public final class SelectItemActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public SelectItemActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public SelectItemActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -26,7 +26,7 @@ public final class SelectItemActionListener implements Listener {
         final ItemStack itemStackSelected = playerInventory.getItem(playerItemHeldEvent.getNewSlot());
         final ItemStack itemStackUnselected = playerInventory.getItem(playerItemHeldEvent.getPreviousSlot());
         for (final ItemStack itemStack : playerInventory.getContents()) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final SelectItemAction selectItemActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final SelectItemAction selectItemActionItem))
                 continue;
 
             if (itemStackSelected != null && itemStackSelected.equals(itemStack)) {

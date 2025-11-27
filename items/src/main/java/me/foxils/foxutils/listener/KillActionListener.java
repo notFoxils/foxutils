@@ -16,15 +16,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import me.foxils.foxutils.itemaction.KillAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 import me.foxils.foxutils.utility.ItemUtils;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class KillActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public KillActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public KillActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -67,7 +67,7 @@ public final class KillActionListener implements Listener {
         }
 
         for (final ItemStack itemStack : attackerInventoryContents) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final KillAction killActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final KillAction killActionItem))
                 continue;
 
             if (itemStack.equals(itemStackUsedToKill))

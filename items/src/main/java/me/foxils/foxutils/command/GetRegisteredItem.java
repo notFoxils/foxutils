@@ -10,17 +10,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.foxils.foxutils.Item;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.ItemTemplate;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 import net.md_5.bungee.api.ChatColor;
 
 public class GetRegisteredItem implements CommandExecutor {
 
     // TODO: Needs a rewrite + extensive testing
     //
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public GetRegisteredItem(final @Nonnull ItemRegistry itemRegistry) {
+    public GetRegisteredItem(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -35,14 +35,14 @@ public class GetRegisteredItem implements CommandExecutor {
         }
 
         Player playerToGiveTo = null;
-        Item itemToGive = null;
+        ItemTemplate itemToGive = null;
         int amountToGive = 0;
 
         if (args.length == 1) {
             final ArrayList<NamespacedKey> registeredItemKeys = new ArrayList<>();
 
-            for (final Item item : itemRegistry.getRegisteredItems()) {
-                registeredItemKeys.add(item.getKey());
+            for (final ItemTemplate item : itemRegistry.getRegisteredItems()) {
+                registeredItemKeys.add(item.getItemKey());
             }
 
             if (registeredItemKeys.isEmpty()) {
@@ -59,7 +59,7 @@ public class GetRegisteredItem implements CommandExecutor {
                 if (similarItemKeys > 1)
                     continue;
 
-                itemToGive = itemRegistry.getItemFromKey(itemKey);
+                itemToGive = itemRegistry.getItemTemplateFromKey(itemKey);
             }
 
             if (similarItemKeys > 1) {
@@ -73,7 +73,7 @@ public class GetRegisteredItem implements CommandExecutor {
             }
 
             if (!(commandSender instanceof Player)) {
-                commandSender.sendMessage(ChatColor.RED + "No player was specified to give the '" + itemToGive.getName() + "' to.");
+                //commandSender.sendMessage(ChatColor.RED + "No player was specified to give the '" + itemToGive.getName() + "' to.");
                 return true;
             }
 
@@ -94,7 +94,7 @@ public class GetRegisteredItem implements CommandExecutor {
         if (playerToGiveTo == null || itemToGive == null || amountToGive == 0)
             return true;
 
-        if (!playerToGiveTo.getInventory().addItem(itemToGive.createItem(amountToGive)).isEmpty()) {
+        if (!playerToGiveTo.getInventory().addItem(itemToGive.createItemStack(amountToGive)).isEmpty()) {
             commandSender.sendMessage(
                     ChatColor.YELLOW + "Could not give '" + playerToGiveTo.getName() + "' all of the neccessary Items.");
             return true;

@@ -1,12 +1,10 @@
 package me.foxils.foxutils;
 
-import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,47 +30,55 @@ import me.foxils.foxutils.listener.ProjectileLaunchActionListener;
 import me.foxils.foxutils.listener.SelectItemActionListener;
 import me.foxils.foxutils.listener.SwapOffHandActionListener;
 import me.foxils.foxutils.listener.TakeDamageActionListener;
-import me.foxils.foxutils.registry.ItemRegistry;
-import me.foxils.foxutils.utility.ItemAbility;
-import me.foxils.foxutils.utility.ItemAbility.ActionType;
-import net.md_5.bungee.api.ChatColor;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 public final class FoxutilsItems extends JavaPlugin {
 
     private static final long PASSIVE_TASK_INTERVAL_TICKS = 5;
 
-    private ItemRegistry itemRegistry;
-    private ItemKey itemKey;
+    private static void registerEvents(final FoxutilsItems plugin, final PluginManager pluginManager, final @Nonnull ItemTemplateRegistry itemTemplateRegistry) {
+        pluginManager.registerEvents(new AttackActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new ClickActionsListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new CraftItemActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new DropActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new InventoryClickActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new SelectItemActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new KillActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new MineBlockActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new ProjectileHitActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new ProjectileLaunchActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new SwapOffHandActionListener(itemTemplateRegistry), plugin);
+        pluginManager.registerEvents(new TakeDamageActionListener(itemTemplateRegistry), plugin);
+    }
+
+    private static void registerCommands(final FoxutilsItems plugin, final ItemTemplateRegistry itemTemplateRegistry) {
+        Objects.requireNonNull(plugin.getCommand("getitem")).setExecutor(new GetRegisteredItem(itemTemplateRegistry));
+        Objects.requireNonNull(plugin.getCommand("listitems")).setExecutor(new ListRegisteredItems(itemTemplateRegistry));
+    }
+
+    private static void registerItems(final FoxutilsItems plugin, final ItemTemplateRegistry itemTemplateRegistry) {
+        itemTemplateRegistry.registerItemTemplate(new ThyTestItem(plugin));
+    }
+
+    private ItemTemplateRegistry itemTemplateRegistry;
 
     @Override
     public void onEnable() {
-        itemRegistry = new ItemRegistry();
-        Bukkit.getServicesManager().register(ItemRegistry.class, itemRegistry, this, ServicePriority.Highest);
+        itemTemplateRegistry = new ItemTemplateRegistry(this);
+        getServer().getServicesManager().register(ItemTemplateRegistry.class, itemTemplateRegistry, this, ServicePriority.Highest);
 
-        itemKey = new ItemKey(this);
         PDCLocationKey.initializeKeys(this);
 
-        registerEvents(itemRegistry);
+        registerEvents(this, getServer().getPluginManager(), itemTemplateRegistry);
         scheduleTasks();
-        registerCommands();
-        registerItems();
+        registerCommands(this, itemTemplateRegistry);
+        registerItems(this, itemTemplateRegistry);
     }
 
-    private void registerEvents(final @Nonnull ItemRegistry itemRegistry) {
-        final PluginManager pluginManager = Bukkit.getPluginManager();
-
-        pluginManager.registerEvents(new AttackActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new ClickActionsListener(itemRegistry), this);
-        pluginManager.registerEvents(new CraftItemActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new DropActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new InventoryClickActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new SelectItemActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new KillActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new MineBlockActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new ProjectileHitActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new ProjectileLaunchActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new SwapOffHandActionListener(itemRegistry), this);
-        pluginManager.registerEvents(new TakeDamageActionListener(itemRegistry), this);
+    @Override
+    public void onDisable() {
+        getServer().getServicesManager().unregister(itemTemplateRegistry);
+        itemTemplateRegistry = null;
     }
 
     private void scheduleTasks() {
@@ -81,7 +87,7 @@ public final class FoxutilsItems extends JavaPlugin {
                 final PlayerInventory playerInventory = player.getInventory();
 
                 for (final ItemStack itemStack : playerInventory.getContents()) {
-                    if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final PassiveAction passiveActionItem)) {
+                    if (!(itemTemplateRegistry.getItemTemplateFromItemStack(itemStack) instanceof final PassiveAction passiveActionItem)) {
                         continue;
                     }
 
@@ -89,7 +95,7 @@ public final class FoxutilsItems extends JavaPlugin {
                 }
 
                 for (final ItemStack itemStack : new ItemStack[]{playerInventory.getHelmet(), playerInventory.getChestplate(), playerInventory.getLeggings(), playerInventory.getBoots(), playerInventory.getItemInMainHand(), playerInventory.getItemInOffHand()}) {
-                    if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final ActiveItemAction activeItemActionItem)) {
+                    if (!(itemTemplateRegistry.getItemTemplateFromItemStack(itemStack) instanceof final ActiveItemAction activeItemActionItem)) {
                         continue;
                     }
 
@@ -99,31 +105,12 @@ public final class FoxutilsItems extends JavaPlugin {
         }, 0L, PASSIVE_TASK_INTERVAL_TICKS);
     }
 
-    private void registerCommands() {
-        Objects.requireNonNull(Bukkit.getPluginCommand("getitem")).setExecutor(new GetRegisteredItem(itemRegistry));
-        Objects.requireNonNull(Bukkit.getPluginCommand("listitems")).setExecutor(new ListRegisteredItems(itemRegistry));
-    }
-
-    private void registerItems() {
-        itemRegistry.registerItem(new ThyTestItem(itemKey.TEST_ITEM, this, Material.TRIDENT, "Thy Test Item", null,
-                List.of(
-                        new ItemAbility("Test Shit",
-                                List.of(
-                                        "They see me testin'", ChatColor.ITALIC + "They hatin'"
-                                ), ActionType.NONE, null)
-                ),
-                List.of(
-                        new ItemStack(Material.BARRIER), new ItemStack(Material.BARRIER), new ItemStack(Material.BARRIER),
-                        new ItemStack(Material.BARRIER), new ItemStack(Material.BARRIER), new ItemStack(Material.BARRIER),
-                        new ItemStack(Material.BARRIER), new ItemStack(Material.BARRIER), new ItemStack(Material.BARRIER)),
-                false, false));
-    }
-
     public final class PDCLocationKey {
+        private static boolean keysInitialized = false;
+
         public static NamespacedKey ITEMSTACK_ITEMKEY_STORAGE;
         public static NamespacedKey ITEMSTACK_UID_STORAGE;
         public static NamespacedKey DATAHOLDER_RELATED_ITEMSTACK_UID_STORAGE;
-        private static boolean keysInitialized = false;
 
         static final void initializeKeys(final @Nonnull FoxutilsItems plugin) {
             if (keysInitialized) {
@@ -138,13 +125,5 @@ public final class FoxutilsItems extends JavaPlugin {
         }
 
         private PDCLocationKey() {}
-    }
-
-    private final class ItemKey {
-        public final NamespacedKey TEST_ITEM;
-
-        ItemKey(final @Nonnull FoxutilsItems plugin) {
-            this.TEST_ITEM = new NamespacedKey(plugin, "test_item");
-        }
     }
 }

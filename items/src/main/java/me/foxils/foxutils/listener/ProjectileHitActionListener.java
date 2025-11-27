@@ -14,14 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import me.foxils.foxutils.itemaction.ProjectileHitAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 import me.foxils.foxutils.utility.ItemUtils;
 
 public final class ProjectileHitActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public ProjectileHitActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public ProjectileHitActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -47,7 +47,7 @@ public final class ProjectileHitActionListener implements Listener {
 
                     final ItemMeta itemMeta = itemStack.getItemMeta();
 
-                    if (!(itemRegistry.getItemFromItemMeta(itemMeta) instanceof ProjectileHitAction)) {
+                    if (!(itemRegistry.getItemTemplateFromItemMeta(itemMeta) instanceof ProjectileHitAction)) {
                         continue;
                     }
 
@@ -70,7 +70,7 @@ public final class ProjectileHitActionListener implements Listener {
         }
 
         for (final ItemStack itemStack : playerInventoryContents) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final ProjectileHitAction projectileHitActionItem)) {
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final ProjectileHitAction projectileHitActionItem)) {
                 continue;
             }
 

@@ -14,14 +14,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import me.foxils.foxutils.itemaction.ProjectileLaunchAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 import me.foxils.foxutils.utility.ItemUtils;
 
 public final class ProjectileLaunchActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public ProjectileLaunchActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public ProjectileLaunchActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -47,7 +47,7 @@ public final class ProjectileLaunchActionListener implements Listener {
 
                     final ItemMeta itemMeta = itemStack.getItemMeta();
 
-                    if (!(itemRegistry.getItemFromItemMeta(itemMeta) instanceof ProjectileLaunchAction)) {
+                    if (!(itemRegistry.getItemTemplateFromItemMeta(itemMeta) instanceof ProjectileLaunchAction)) {
                         continue;
                     }
 
@@ -70,7 +70,7 @@ public final class ProjectileLaunchActionListener implements Listener {
         }
 
         for (final ItemStack itemStack : playerInventoryContents) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final ProjectileLaunchAction projectileLaunchActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final ProjectileLaunchAction projectileLaunchActionItem))
                 continue;
 
             if (projectileLaunchingItemStack.equals(itemStack)) {

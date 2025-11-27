@@ -9,13 +9,13 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.foxils.foxutils.itemaction.CraftItemAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 public final class CraftItemActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public CraftItemActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public CraftItemActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -27,13 +27,13 @@ public final class CraftItemActionListener implements Listener {
             return;
 
         for (final ItemStack itemStack : playerWhoCrafted.getInventory().getContents()) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final CraftItemAction craftItemActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final CraftItemAction craftItemActionItem))
                 continue;
 
             craftItemActionItem.onCraftOtherItem(craftItemEvent, itemStack, craftedItem, playerWhoCrafted);
         }
 
-        if (!(itemRegistry.getItemFromItemStack(craftedItem) instanceof final CraftItemAction craftItemActionItem))
+        if (!(itemRegistry.getItemTemplateFromItemStack(craftedItem) instanceof final CraftItemAction craftItemActionItem))
             return;
 
         craftItemActionItem.onCraftThisItem(craftItemEvent, craftedItem, playerWhoCrafted);

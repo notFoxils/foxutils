@@ -16,14 +16,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import me.foxils.foxutils.itemaction.AttackAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 import me.foxils.foxutils.utility.ItemUtils;
 
 public final class AttackActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public AttackActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public AttackActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -76,7 +76,7 @@ public final class AttackActionListener implements Listener {
             itemStackUsedToAttack = attackerInventory.getItemInMainHand();
 
         for (final ItemStack itemStack : attackerInventoryContents) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final AttackAction attackActionItem)) {
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final AttackAction attackActionItem)) {
                 continue;
             }
 

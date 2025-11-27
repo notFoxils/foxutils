@@ -11,16 +11,16 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.foxils.foxutils.itemaction.DropItemAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 public final class DropActionListener implements Listener {
 
     // NOTE: https://hub.spigotmc.org/jira/browse/SPIGOT-5632
     static final HashMap<Player, Long> DROP_INTERACT_COOLDOWN = new HashMap<>();
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public DropActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public DropActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -32,13 +32,13 @@ public final class DropActionListener implements Listener {
         final ItemStack droppedItem = playerDropItemEvent.getItemDrop().getItemStack();
 
         for (final ItemStack itemStack : player.getInventory().getContents()) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final DropItemAction dropItemActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final DropItemAction dropItemActionItem))
                 continue;
 
             dropItemActionItem.onDropOtherItem(playerDropItemEvent, itemStack, droppedItem);
         }
 
-        if (!(itemRegistry.getItemFromItemStack(droppedItem) instanceof final DropItemAction dropItemActionItem))
+        if (!(itemRegistry.getItemTemplateFromItemStack(droppedItem) instanceof final DropItemAction dropItemActionItem))
             return;
 
         dropItemActionItem.onDropThisItem(playerDropItemEvent, droppedItem);

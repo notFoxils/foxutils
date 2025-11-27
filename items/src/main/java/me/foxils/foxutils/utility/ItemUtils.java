@@ -24,13 +24,13 @@ public final class ItemUtils {
         return true;
     }
 
-    public static boolean storeBooleanData(final @Nonnull Boolean booleanData,
+    public static boolean storeBooleanData(final boolean booleanData,
                                            final @Nonnull NamespacedKey key,
                                            final @Nonnull ItemMeta itemMeta) {
         return storeDataOfType(PersistentDataType.BOOLEAN, booleanData, key, itemMeta);
     }
 
-    public static boolean storeIntegerData(final @Nonnull Integer integerData,
+    public static boolean storeIntegerData(final int integerData,
                                            final @Nonnull NamespacedKey key,
                                            final @Nonnull ItemMeta itemMeta) {
         return storeDataOfType(PersistentDataType.INTEGER, integerData, key, itemMeta);
@@ -76,9 +76,9 @@ public final class ItemUtils {
         return storeDataOfType(PersistentDataType.STRING, stringData, key, itemStack);
     }
 
-    public static <Primitive, Complex> @Nullable Complex getDataOfType(final @Nonnull PersistentDataType<Primitive, Complex> type,
-                                                                       final @Nonnull NamespacedKey key,
-                                                                       final @Nonnull ItemMeta itemMeta) {
+    public static @Nullable <Complex> Complex getDataOfType(final @Nonnull PersistentDataType<?, Complex> type,
+                                                            final @Nonnull NamespacedKey key,
+                                                            final @Nonnull ItemMeta itemMeta) {
         return itemMeta.getPersistentDataContainer().get(key, type);
     }
 
@@ -94,11 +94,12 @@ public final class ItemUtils {
         return getDataOfType(PersistentDataType.STRING, key, itemMeta);
     }
 
-    public static <Primitive, Complex> @Nullable Complex getDataOfType(final @Nonnull PersistentDataType<Primitive, Complex> type,
-                                                                       final @Nonnull NamespacedKey key,
-                                                                       final @Nonnull ItemStack itemStack) {
-        if (!itemStack.hasItemMeta())
+    public static @Nullable <Complex> Complex getDataOfType(final @Nonnull PersistentDataType<?, Complex> type,
+                                                            final @Nonnull NamespacedKey key,
+                                                            final @Nonnull ItemStack itemStack) {
+        if (!itemStack.hasItemMeta()) {
             return null;
+        }
 
         return itemStack.getItemMeta().getPersistentDataContainer().get(key, type);
     }
@@ -135,7 +136,7 @@ public final class ItemUtils {
         return (itemStack.hasItemMeta()) ? getUid(itemStack.getItemMeta()) : null;
     }
 
-    public static @Nullable boolean setRelatedItemUid(final @Nonnull Projectile projectile,
+    public static boolean setRelatedItemUid(final @Nonnull Projectile projectile,
                                                       final @Nonnull ItemMeta itemMeta) {
         final UUID itemUid = getUid(itemMeta);
         if (itemUid == null)
@@ -145,7 +146,7 @@ public final class ItemUtils {
         return true;
     }
 
-    public static @Nullable boolean setRelatedItemUid(final @Nonnull Projectile projectile,
+    public static boolean setRelatedItemUid(final @Nonnull Projectile projectile,
                                                       final @Nonnull ItemStack itemStack) {
         return (itemStack.hasItemMeta()) ? setRelatedItemUid(projectile, itemStack.getItemMeta()) : false;
     }
@@ -157,11 +158,11 @@ public final class ItemUtils {
     }
 
     /**
-     * final @param key               Location to where the cooldown should be and/or is stored.
-     * final @param itemStack         ItemStack to apply a cooldown to.
-     * final @param cooldownInSeconds The cooldown in seconds.
+     * @param key               Location to where the cooldown should be and/or is stored.
+     * @param itemStack         ItemStack to apply a cooldown to.
+     * @param cooldownInSeconds The cooldown in seconds.
      *
-     * final @return True if there is a cooldown or False if there is not.
+     * @return True if there is a cooldown or False if there is not.
      */
     public static boolean getCooldown(final @Nonnull NamespacedKey key,
                                       final @Nonnull ItemStack itemStack,
@@ -180,20 +181,20 @@ public final class ItemUtils {
     }
 
     /**
-     * final @param key               Location to where the cooldown should be and/or is stored.
-     * final @param itemMeta          ItemMeta of an ItemStack to apply a cooldown to.
-     * final @param cooldownInSeconds The cooldown in seconds.
+     * @param key               Location to where the cooldown should be and/or is stored.
+     * @param itemMeta          ItemMeta of an ItemStack to apply a cooldown to.
+     * @param cooldownInSeconds The cooldown in seconds.
      *
-     * final @return True if there is a cooldown or False if there is not.
+     * @return True if there is a cooldown or False if there is not.
      */
     public static boolean getCooldown(final @Nonnull NamespacedKey key,
                                       final @Nonnull ItemMeta itemMeta,
                                       final double cooldownInSeconds) {
         final long timestampOfNowInNanoseconds = System.nanoTime();
 
-        // (timestampOfNowInNanoseconds - timestampOfLastCooldownInNanoseconds) > (cooldownInSeconds * 1000000000)
+        // (timestampOfNowInNanoseconds - timestampOfLastCooldownInNanoseconds) > (cooldownInSeconds * 1_000_000_000)
         // timeSinceLastCooldownInNanoseconds > cooldownInNanoseconds
-        if ((timestampOfNowInNanoseconds - Objects.requireNonNullElse(getDataOfType(PersistentDataType.LONG, key, itemMeta), 0L)) > cooldownInSeconds * 1000000000) {
+        if ((timestampOfNowInNanoseconds - Objects.requireNonNullElse(getDataOfType(PersistentDataType.LONG, key, itemMeta), 0L)) > cooldownInSeconds * 1_000_000_000) {
             storeDataOfType(PersistentDataType.LONG, timestampOfNowInNanoseconds, key, itemMeta);
             return false;
         }

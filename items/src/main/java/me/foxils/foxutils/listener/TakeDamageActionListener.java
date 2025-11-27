@@ -9,14 +9,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 import me.foxils.foxutils.itemaction.TakeDamageAction;
-import me.foxils.foxutils.registry.ItemRegistry;
+import me.foxils.foxutils.registry.ItemTemplateRegistry;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class TakeDamageActionListener implements Listener {
 
-    private final ItemRegistry itemRegistry;
+    private final ItemTemplateRegistry itemRegistry;
 
-    public TakeDamageActionListener(final @Nonnull ItemRegistry itemRegistry) {
+    public TakeDamageActionListener(final @Nonnull ItemTemplateRegistry itemRegistry) {
         this.itemRegistry = itemRegistry;
     }
 
@@ -26,7 +26,7 @@ public final class TakeDamageActionListener implements Listener {
             return;
 
         for (final ItemStack itemStack : damagedPlayer.getInventory().getContents()) {
-            if (!(itemRegistry.getItemFromItemStack(itemStack) instanceof final TakeDamageAction damageActionItem))
+            if (!(itemRegistry.getItemTemplateFromItemStack(itemStack) instanceof final TakeDamageAction damageActionItem))
                 continue;
 
             damageActionItem.onTakeDamage(event, itemStack, damagedPlayer);
